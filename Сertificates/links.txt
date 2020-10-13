@@ -1,5 +1,15 @@
-http://ude.my/UC-e34dff4e-99a5-460a-84ec-ff58315550d0 - udemy Android
-http://cert.software-testing.ru/276161374686544389 - Mobile Application
-http://cert.software-testing.ru/276324588718129665 - Security testing
-http://cert.software-testing.ru/276627710778802695 - Git
-http://cert.software-testing.ru/278761144611504645 - Mobile Application automator
+
+Mobile Application 
+http://cert.software-testing.ru/276161374686544389
+
+Mobile Application automator
+http://cert.software-testing.ru/278761144611504645
+
+Security testing
+http://cert.software-testing.ru/276324588718129665
+
+Git
+http://cert.software-testing.ru/276627710778802695
+
+Android and Java www.udemy.com
+http://ude.my/UC-e34dff4e-99a5-460a-84ec-ff58315550d0
