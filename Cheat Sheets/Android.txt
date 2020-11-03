@@ -1,0 +1,125 @@
+emulator -list-avds - вывести список эмульятров
+emulator -avd and801 - запустить один из эмуляторов
+emulator -help - вывести список всех команд
+adb devices - список подключенных устройств к adb
+adb devices -l - более подробная информация об устройствах
+clear - очистить консоль
+adb logcat - 
+adb -d logcat - выбирает девайс, который подключен по USB
+adb -e logcat - выберет устрйоство, подключенное под TCP IP, в том числе это и эмулятор
+-s ключ позволяет передавать серийный номер (adb -s 15089603 logcat)
+adb -t 4 logcat - выведет инфу по девайсу по транспортному id
+adb kill-server - рестарт adb и переподключение всех устройств
+adb -s 15089603 tcpip 5555 - демон адб на устройстве будет готов к подключению по порту 5555
+adb -s 15089603 shell ifconfig wlan0 - находим адрес нашего устройства в сети, так мы увидем ip нашего девайса в нашей сети
+adb connect 192.168.31.22 - подключиться по wi-fi к девайсу и он будет виден теперь в списке adb devices, только вместо id будет написан ip
+adb disconnect 192.168.31.22:5555 - отключить конект с устройством
+adb disconnect - отключить все tcpip устройства
+adb install D:\apks\wikipedia.apk - установка приложения с локального диска
+adb install -r D:\apks\wikipedia.apk - переустановить приложение
+adb uninstall org.wikipedia - удаление приложения, в данном случае указыает не имя apk, а имя пакета
+adb shell pm list packages - вывести список всех пакетов (pm - пакетный менеджер)
+adb shell pm list packages | grep "wiki" - отфильтровать, чтобы вывести только нужное имя пакета
+adb shell dumpsys package org.wikipedia - команда, чтобы узнать имя активити с которого стартует приложение
+adb shell dumpsys package org.wikipedia | grep org.wikipedia - отфильтровать
+adb shell am start org.wikipedia/.main.MainActivity
+adb shell am start org.wikipedia/.page.PageActivity - запустить приложение по имени пакета и активити (am - activity manager)
+adb shell dumpsys window windows | grep Focus - показать имя пакета и активити показаного на экарне
+adb shell am force-stop org.wikipedia - остановить приложение
+adb shell am start -n com.android.settings/com.android.settings.Settings - запуск настроек
+adb shell am start com.google.android.apps.messaging - запуск приложения сообщений
+dumpsys - выведит всю информацию о телефоне
+adb shell pm clear org.wikipedia - сброс настроек приложения
+adb shell dumpsys package org.wikipedia - посмотреть все привелегии, которые запрашивает приложение (или adb shell dumpsys package org.wikipedia | grep permission) мы можем тотечно удалять или добавлять нужные нам разрешения
+adb shell pm revoke org.wikipedia android.permission.ACCESS_FINE_LOCATION - удаление разрешения напрмиер на геолокацию
+adb shell pm grant org.wikipedia android.permission.ACCESS_FINE_LOCATION - выдать  разрешение
+но не все пермишены можно убирать или добавлять, так как они необходимы для функционаирования приложения
+
+adb shell - войти в реэим работы с командной обболочкой shell
+exit - выйти из shell
+pwd - показать текущую дирректорию
+ls - l - вывести список сожержимого текущей дирректории
+
+adb push "D:\apks\old-wiki.apk" /sdcard/Download - загрузить на телефон файл с локального диска
+adb pull /sdcard/test/story.txt D:\apks - стянуть файл с телефона на комп
+adb push "D:\apks\story.txt" /sdcard/test/true_story.txt - загрузить на телефон и переименовать
+
+adb shell screencap /sdcard/Download/screenshot.png - сделать скриншот и положить его в указанную папку
+adb pull sdcard/Download/screenshot.png D:/apks - стянуть скриншот на комп
+Скрины нужжно делать именно в формате png, другие форматы не поддерживаются
+adb shell screenrecord /sdcard/Download/demo.mp4 - видео запись с экрана, максимальное время записи 3 минуты или остановить на ctrl+c, так же можно зарнее задать время записи ключем
+adb shell screenrecord /sdcard/Download/demo.mp4 --time-limit 5
+adb logcat >> D:\apks\log.txt - записать в файл все логи с устройства
+adb logcat -d - все логи из буфера, но не дописывать их, т.е новые логи от работы устройства не будут добавляться
+Если нужны логи по конкретной ситуации для разработчика, то сначала надо почистить буфер
+adb logcat -c - почистить буфер
+adb logcat -v time - теперь логи будут выводиться по времени
+adb logcat org.wikipedia - логи для конкртеного приложения
+adb logcat org.wikipedia:V - если нужны логи определенного уровня, нпример V - verbose (все логи), E - error (получим только уровень ошибок и ниже)
+adb logcat *:E - получить все ошибки из логов
+adb shell getprop - получить список параметров утройства и состояний этих параметров
+adb shell getprop wifi.interface - получение инф о конкретном параметре
+adb shell getprop ro.serialno - серийный номер
+adb shell getprop ro.product.model
+adb shell getprop ro.build.display.id
+adb shell getprop ro.build.display.version.release
+adb shell dumpsys - супер инфа о девайсе
+adb shell dumpsys battery - инфа о батареи
+adb shell dumpsys battery unplug - отключить зарядку
+adb shell dumpsys battery set level 50 - установить уровень заряда на 50%
+adb shell dumpsys battery set status 3 - телефон будет считать, что батарея разряжается
+adb shell dumpsys battery reset - вернуть состояние батареии к началу
+adb shell dumpsys deviceidle force-idle - прийти к состоянию, когда при включенном экране снижается активность устройства (deep idle mode)
+adb shell dumpsys gfxinfo org.wikipedia - инфа о графике нашего устройства, увидим тестовые данные для работы с этим пакетом в удобном графическом виде
+adb -d shell ping google.com
+adb shell ping -c 1 google.com - отослать только один пакет
+adb shell ping -i 3 google.com - будет посылать 1 пакет каждые 3 секунды
+adb shell ifconfig - открыть инфу по всем сетевым интерфейсам
+adb shell ifconfig wlan0 - посмотреть инфу по конкретному интерфейсу
+adb shell netstat - если нужно посмотреть активные соединения на устройстве, таблица маршрутизация и статистика по сетевым протоколам
+adb shell wm size 720x1280 - изменить размер экрана на заданный wm (windowm manage)
+adb shell wm size reset - вернуть первоначальное разрешение
+adb shell wm density 100 - меняем плотность пикселей на дюйм
+adb shell wm density reset - сбросить на первоначальное значение
+adb shell wm overscan 100,200,0,0 - смещение экрана в указанные координаты, может понадобиться для проверки режима работа одной рукой
+adb shell input text "Google" - ввести текст в активное поле ввода
+adb shell input text "Hello%sWorld" - %s - спецсимвол для замены пробела, иначе будет ошибка, так как пробел будет восприниматься как конец команды и адльше другие параметры команды
+adb shell input keyevent 4 - нажать кнопку back
+adb shell input keyevent 3 - нажать кнопку home
+adb shell input keyevent 187 - нажать кнопку недавних приложений
+adb shell input keyevent 26 - нажать кнопку power(выключить подсветку)
+adb shell input keyevent KEYCODE_POWER - еще один способ нажать внопку повер
+adb shell input keyevent --longpress KEYCODE_POWER  - долгое нажатие соответственно
+adb shell input tap 100 300 - тапнуть по заданным координатам
+Pointer location в настройках разработчика, чтобы вверху было видно координаты
+adb shell input swipe 500 1500 500 300 200 - это свайп по координатам, последнее значение длитеьлность свайпа в милисекундах
+adb shell input swipe 540 1840 540 1840 1000 - аналог долго нажатия (пример долго тапа по кнопке хоме)
+
+adb shell svc wifi enable|disable - отклюит/включить wi-fi
+adb shell svc data disable|enable - включение - отключение передачи данных
+adb shell settings put secure location_providers_allowed +gps (включить - отключить gps)
+adb shell settings put secure location_providers_allowed -gps - отключить
+adb shell settings put secure location_providers_allowed +network - добавляем еще и сеть для определения координат
+adb shell settings put secure location_providers_allowed +wifi - подключаем еще и wifi для определения координат
+adb shell settings get system screen_brightness - получить значение яркости экрана
+adb shell settings put system screen_brightness 100 - установить значение яркости
+adb shell settings put system acceleromenet_rotation 0 - откючить автоматическую ротацию
+adb shell settings put system user_rotation 2 - повернуть экран вверх ногами (0,1,2,3)
+adb shell am start -a android.media.action.IMAGE_CAPTURE - запустить камеру
+adb shell input keyevent KEYCODE_CAMERA - сделать фото или видео при открытой камере
+adb shell am start -a android.media.action.VIDEO_CAPTURE - запустить видео камеру
+adb shell settings put global airplane_mode_on 1 - включить режим полета, но для применения нужно перезагрузить, нужно транслировать реальный интент, а это возможно только на рутованных устройствах, поэтому внимательно с командами из интернета, некоторые из них работают только на старых версиях андроид
+
+adb shell monkey - вывести список ключей
+adb shell monkey -p org.wikipedia -v 300(ключ -p - передаем имя пакета, -v - количство необхоимых действий)
+adb shell monkey --pct-syskeys 0 -p org.wikipedia -v 300 (-pct-syskeys 0 - как часто в процессе тетсирования будут иползоваться исстемные кнопки, в данном пример 0 означает что системные кнопки не будут вообще использоваться)
+adb shell monkey --pct-syskeys 0 --throttle 100 -p org.wikipedia -v 300 (--throttle 100 (задержка 1/10 секунда)- ключ, чтоб уменшить скорость выполнения действий для лучшей визуализации)
+adb shell monkey --pct-syskeys 0 --throttle 100 -p org.wikipedia -s 1 -v 300
+-s (SEED) получиться одинаковую последоватьельность действия несколько раз, полезно при нагрузочном тестированиии
+--kill-process-after-error - при креше приложения обезъянка остановиться, чтобы можно было отловить ошибку
+
+
+
+
+
+

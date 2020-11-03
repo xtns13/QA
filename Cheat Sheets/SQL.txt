@@ -1,0 +1,253 @@
+Реляционные базы данных - базы, основанные на реляционной модели данных. Реляционная модель данных включает следующие компоненты:
+Структурный аспект (составляющая) — данные в базе данных представляют собой набор отношений.
+Аспект (составляющая) целостности — отношения отвечают определённым условиям целостности. РМД поддерживает декларативные ограничения целостности уровня домена (типа данных), уровня отношения и уровня базы данных.
+Аспект (составляющая) обработки (манипулирования) — РМД поддерживает операторы манипулирования отношениями (реляционная алгебра, реляционное исчисление).
+СУБД - система управления базыми данных.
+SQL - язык структурированных запросов
+
+use learnqa - указать какую базу используем по умолчанию
+порядок - select, затем список полей, в тмо числе агригированных, затем from, дальше название таблицы, затем where, group by, having, order by
+SELECT - выбрать данные
+INSERT - вставить данные
+-- комменты
+условия where обрабатыаются до того как будут обрабатываться условия SELECT, а есть having - условие, которое применяется после группировок, альясов и пр, используется для указания условия на результатах агрегаторных функций
+select price, discount from Cats
+select * from Cats where price is null (is not null)
+select * from Cats where age between 5 and 7
+select * from Cats where age > 6 and discount > 0
+select * from Cats where shop_id = 1 or shop_id = 4
+select * from Shops where country IN ('Russia', 'Italy', 'UK', 'USA')  - или NOT IN
+select * from Shops where country = 'Russia' or country = 'Japanese' and city = 'Moscow' or city = 'Tokio' (не правильный запрос, из-за приоритета оператора and) поэтому пистаь запрос два варианта ниже
+1. select * from Shops where country = 'Russia' and city = 'Moscow' or country = 'Japanese' and city = 'Tokio'
+2. select * from Shops where (country = 'Russia' or country = 'Japanese') and (city = 'Moscow' or city = 'Tokio')
+select age from Cats (выведет все поля со значениями возраста)
+select distinct age from Cats (distinct - оператор сортировки, выведит только те поля, что отличаются от других, т.е. имеют уникальные значения)
+если после писать ORDER BY то сортировка
+select distinct age from Cats order by age
+select distinct age from Cats order by age desc - сортировка от большего к меньшему
+select distinct age from Cats order by age ASC - от меньшего к большему
+select * from Cats order by price ASC, discount desc
+select * from Breeds where name like 'american %' (like это по сути функция сравнения, но может использовать спецсимволы "_"(1 любой символ), "%"(любое количество символов), 
+select concat(`name`,' ',`character`) from Breeds - объединение полей таблицы, например когда надо вычислить самое дилное поле и посмотреть как оно будет отображаться в приложении (contcat - склеивание стро)
+select concat('All ',`name`,'s are ',`character`) AS phrase from Breeds - ще оди прмир конкатенации + добавление обычных строк в вывод
+ВАЖНО, названия полей выделяем опострофами(обратные ковычки), а строковые значения ковычками (разницы между одинарными или двойными нет), AS phrase присваивает имя столбцу на выводе
+select name, length(name) as name_length from Cats - вевести все поля name и их длину в сиимволах и назвать второй столбец как name_length
+select round(2.155,2) - "2" означет, что мы поулчим округлении до 2 знаков после запятой, т.е. 2.16
+select * from Cats where MONTH(birthday) = 2 - получаем всех, был рождем в феврале
+select now() - возвращает текущую дату и время с сервера
+select * from Cats where YEAR(birthday) = YEAR(now())-1 - возвращает всех, родившиххся в текущем году -1
+select * from Cats where birthday > now() - interval 26 month - сравниваем поле birthday и вычитанием из текущей даты 26 месяцев
+DATE(now()) - привести время к дате, т.е. убрать время
+select * from Cats where age <> FLOOR((DATE(now())- birthday) / 30) - выводит всех, у коого неправильное значение возраста, FLOOR - округляет в меньшую сторону
+select * from CustomerLog limit 10 - вывести только первые 10 записей выборки
+select * from CustomerLog limit 10 offset 10 - вывести 10 записей после 10 записей, т.е. сколько первых записей пропустить
+select sum(price) from Cats - посчитать сумму всех полей столбца price
+нельзя одновременно использовать агрегированные и не агрегированные поля, например select sum(price), name from Cats - получим ошибку
+sum - сумма, avg - среднее арифмитическое, count - получить число записей(строк) в таблице select count(*) from CustomerLog
+select min(price), max(price) from Cats - соотввественно сформирует таблицу с минимальной и максимальной стоимостью объекта
+select distinct breed_id, count(*) from Cats group by breed_id - количество объектов для каждого breed_id
+select distinct breed_id, count(*), avg(price) from Cats group by breed_id - тут добавилась средняя стоимость объекта 
+order by - только упорядочивает поля, т.е. он производит никаких действий с изначальным набором данных, group by - обеспечивает разделение на сегменты
+select distinct breed_id, gender, count(*) from Cats group by breed_id, gender - показывает сколько шт породы каждого пола
+
+select breed_id, count(*) as amount from Cats where price > 115
+group by breed_id
+having amount >=3
+
+select * from Cats where shop_id in (select id from Shops where city = 'Moscow')  - в скобках поулчаем список id городов и испоьзуем его как подзапрос
+select `name`, city, (select count(*) from Cats where Cats.shop_id = Shops.id) as amount from Shops
+inner join, Left join, Right join, Outer Join (или full join, в MYAQL его нет)
+
+select Cats.`name`, Shops.country, Shops.city, Shops.adds
+from Cats
+left join Shops
+on Cats.shop_id = Shops.id это условие объединения)
+или короткий вариант
+select Cats.`name`, Shops.country, Shops.city, Shops.adds
+from Cats, Shops
+where Cats.shop_id = Shops.id
+
+!!!!!объединение нескольких таблиц подобно объединение двух таблиц, только нескольких)!!!!!
+
+select Cats.`name` as cat_name,
+Breeds.name as breed,
+Shops.name as shop
+from Cats
+join Shops
+join Breeds
+on Cats.shop_id = Shops.id
+AND Cats.breed_id = Breeds.id
+
+select
+Shops.id as shop_id,
+Shops.name as shop_name,
+Breeds.name as breed,
+count(*) as amount
+From Cats, Shops, Breeds
+where Cats.shop_id = Shops.id AND Cats.breed_id = Breeds.id
+group by shop_id, shop_name, breed
+order by amount DESC
+
+select name, age from Hamsters
+union
+select name, age from Cats
+(объединяет и выводит данные из двух таблиц одной за другой, главное, чтоб количество полей в обоих таблицах было одинаковым)
+
+select Cats.name, Shops.country, Shops.city, Shops.adds
+from Cats
+LEFT Join Shops
+on Cats.shop_id = Shops.id
+UNION
+Select Cats.name, Shops.country, Shops.city, Shops.adds
+from Cats
+Right Join Shops
+On Cats.shop_id = Shops.id
+(способ объединения всех полей в mySQL т.е. аналог Outer Join (или full join, в MYAQL его нет), только в этом примере не были показаны одинаковые строки, т.к. UNION исключает дубликаты, но есть UNION ALL которй показыает все записи и ничего не исключает, это очен актуально, так как в разных таблицах могут быть, например один кот и хомяк, у которых совпадает имя и возраст и тогда мы его потеряем. Важно использовать с разными таблицами, когда важно никого не потерять
+
+select name, age from Hamsters where name = 'Sam'
+UNION ALL
+select name, age from Cats where name = 'Sam'
+
+Типы данных
+целочисленные
+с плавающей
+date and time YYYY-MM-DD HH:MM:SS
+строковые (varchar(10) ограничены 256 символами, есл инжуно больше то используют формат TEXT
+char (char(x), всегда заполняет до конца, т.е. если в чар 4 положить 2 символа, то он заполнит ее пробелами до 4х.) (CHAR дополняет строку пробелами до максимальной длины, а VARCHAR тратит лишнюю память на хранение значения длины строки)
+char Unicode
+TEXT
+бинарные
+ENUM - перечисления
+
+INSERT - вставка, добавление в таблицу
+insert into SimpleOneColumn - таблица
+(some_text) - поле, куда добавляем данные
+values
+('my_text') - значение, которое мы добавляем
+
+Мультивставка
+insert into CatsOrders
+(`name`, paid, adds, cost)
+values
+('Kitty1', 'Y', 'NY1', '1001'),
+('Kitty2', 'N', 'CA', '1002'),
+('Kitty3', 'Y', 'LA', '1003'),
+('Kitty4', 'N', 'CH', '1004')
+
+оператор UPDATE - позволяет обновить значения в заданных столбцах таблицы
+UPDATE CatsOrder
+SET paid='Y'
+Where name='Vlas'
+
+update CatsOrders
+Set cost=999
+where adds in ('London', 'Rome')
+
+update CatsOrders
+Set cost=11
+where cost=999
+limit 1 (изменим только 1 объект)  так же полезен для тестирвоания своих запросов, ибо при некорректных данных измениться лишь одна запись таблицы
+
+DELETE - удаление записи таблицы
+DELETE FROM CatsOrder
+
+delete from CatsOrders
+where cost = 999
+limit 1
+
+Создание таблиц
+create table Aleksandr_Wake_simple
+(
+	id int,
+    `value` varchar(10)
+)
+
+
+create table Aleksandr_Wake_cats
+(
+	cat_name varchar(100),
+    cat_gender enum('M','F'),
+    owner_name varchar(100),
+    buy_date date
+)
+
+alter table - команда для изменения тиаблицы
+
+alter table Aleksandr_Wake_cats Rename to Aleksandr_Wake_pets - переименование таблицы
+
+alter table Aleksandr_Wake_pets
+change cat_name pet_name varchar(100) - переименование поля таблицы в pet_name
+
+
+alter table Aleksandr_Wake_pets
+add column pet_type enum('cat', 'hamster') - добавление строки в таблицу
+
+drop - команда удаления - таблиц, индексов, баз данных
+Drop table Aleksandr_Wake_simple
+
+Переключаемся в базу learnqa_homework при помощи команды use.
+Допустим, у нас онлайн-магазин. У нас есть три таблицы: Users, Views и Orders.
+Users - информация о пользователе.
+Views - информация о том, какой пользователь в какое время и с какого IP посещал какую страницу нашего сайта.
+Orders - информация о том, какой пользователь и на какую сумму заказал товар.
+Наша задача изучить эти три таблицы и написать запрос, который показал бы имена пользователей, которые не сделали ни одного заказа.
+select `name` from Users where id not in(SELECT distinct user_id from Orders)
+
+
+Переключаемся в базу learnqa_homework при помощи команды use.
+Допустим, у нас онлайн-магазин. У нас есть три таблицы: Users, Views и Orders.
+Users - информация о пользователе.
+Views - информация о том, какой пользователь в какое время и с какого IP посещал какую страницу нашего сайта.
+Orders - информация о том, какой пользователь и на какую сумму заказал товар.
+Наша задача изучить эти три таблицы и написать запрос, который получил бы имена ТРЕХ пользователей, которые за все заказы принесли нам больше всего денег. Не забыть учесть скидки.
+select 
+Users.name as user_name, 
+sum(Orders.price * (1 - Orders.discount)) as all_price
+from Users, Orders
+where Users.id = Orders.user_id
+group by user_name
+order by all_price desc limit 3
+
+
+А это выведет трех покупателей с максимальной разовой покупкой
+select 
+Users.name as user_name, 
+max(Orders.price * (1 - Orders.discount)) as max_price
+from Users, Orders
+where Users.id = Orders.user_id
+group by user_name
+order by max_price desc limit 3
+
+
+Subscribed_Users:
+
+user_id - int(11) - id пользователя
+
+email - varchar(50) - электронная почта пользователя
+
+mailing_type - enum(type1, type2, type3) - типы подписок
+
+status - enum('Y', 'N') - статус подписки на текущий момент (активна/неактивна)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
