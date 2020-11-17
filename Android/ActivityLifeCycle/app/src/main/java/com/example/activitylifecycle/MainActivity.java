@@ -19,6 +19,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d("LifeCycle: ", "onCreate()");
         textViewLifeCycle.append("onCreate()" + "\n");
     }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("LifeCycle: ", "onRestart()");
+        textViewLifeCycle.append("onRestart()" + "\n");
+    }
 
     @Override
     protected void onStart() {
@@ -33,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("LifeCycle: ", "onResume()");
         textViewLifeCycle.append("onResume()" + "\n");
     }
+
 
     @Override
     protected void onPause() {
